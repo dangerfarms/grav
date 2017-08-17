@@ -1,7 +1,7 @@
 FROM nginx:1.11.9
 
 # Desired version of grav
-ARG GRAV_VERSION=1.1.16
+ARG GRAV_VERSION=1.3.0
 
 # Install dependencies
 RUN apt-get update && \
@@ -19,7 +19,9 @@ RUN wget https://github.com/getgrav/grav/releases/download/$GRAV_VERSION/grav-ad
     unzip grav-admin-v$GRAV_VERSION.zip && \
     rm grav-admin-v$GRAV_VERSION.zip && \
     cd grav-admin && \
-    bin/gpm install -f -y admin
+    # PLUGINS
+    bin/gpm install -f -y admin \
+    bin/gpm install form
 
 # Return to root user
 USER root
