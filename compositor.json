@@ -1,0 +1,92 @@
+{
+  "name": "dangerfarms/grav",
+  "version": "0.1.4",
+  "libraries": {
+    "xv": "^1.1.25"
+  },
+  "title": "Grav",
+  "branch": "",
+  "style": {
+    "name": "Future",
+    "componentSet": {
+      "nav": "nav/BasicNav",
+      "header": "header/BannerHeader",
+      "article": "article/BasicArticle",
+      "footer": "footer/BasicFooter"
+    },
+    "fontFamily": "\"Avenir Next\", Helvetica, sans-serif",
+    "heading": {
+      "fontWeight": 500,
+      "textTransform": "uppercase",
+      "letterSpacing": "0.2em"
+    },
+    "alternativeText": {
+      "textTransform": "uppercase",
+      "fontWeight": 400,
+      "letterSpacing": "0.2em",
+      "opacity": 0.75
+    },
+    "colors": {
+      "text": "#333",
+      "background": "#fff",
+      "primary": "#666",
+      "secondary": "#888",
+      "highlight": "#1f80ff",
+      "muted": "#f6f6f6",
+      "border": "#eee"
+    },
+    "layout": {
+      "centered": true,
+      "maxWidth": 1024,
+      "bannerHeight": "80vh"
+    }
+  },
+  "content": [
+    {
+      "component": "nav",
+      "links": [
+        {
+          "href": "https://github.com/dangerfarms/grav",
+          "text": "GitHub"
+        }
+      ]
+    },
+    {
+      "component": "header",
+      "heading": "grav",
+      "subhead": "Simple Docker image running Grav CMS with Nginx",
+      "children": [
+        {
+          "component": "ui/TweetButton",
+          "text": "grav: Simple Docker image running Grav CMS with Nginx",
+          "url": null
+        },
+        {
+          "component": "ui/GithubButton",
+          "user": "dangerfarms",
+          "repo": "grav"
+        }
+      ]
+    },
+    {
+      "component": "article",
+      "metadata": {
+        "source": "github.readme"
+      },
+      "html": "<p>This is a simple Docker image running Grav CMS with the admin plugin under Nginx.</p>\n<p>The container can also optionally generate trusted certs for your domain, using Let&apos;s Encrypt.  See <a href=\"https://evns.io/blog/automatic-ssl-setup-with-grav\">this post</a> for details.</p>\n<p>For more info on Grav, visit the <a href=\"https://getgrav.org/\">Grav Website</a>.</p>\n<h2>Usage</h2>\n<h3>Docker</h3>\n<p>The simplest way to run this image with docker alone is:</p>\n<pre>docker <span class=\"hljs-keyword\">run</span><span class=\"bash\"> <span class=\"hljs-_\">-d</span> -p 80:80 evns/grav</span></pre><p>This will run grav, and prompt for admin user setup on startup.  Grav will be available on <a href=\"http://localhost/\">http://localhost/</a></p>\n<h3>Docker-Compose</h3>\n<p>To simplify further, the site can be started using the following docker compose: </p>\n<pre><span class=\"hljs-attr\">version:</span> <span class=\"hljs-string\">&apos;2&apos;</span>\n<span class=\"hljs-attr\">services:</span>\n<span class=\"hljs-attr\">  site:</span>\n<span class=\"hljs-attr\">    image:</span> <span class=\"hljs-string\">evns/grav</span>\n<span class=\"hljs-attr\">    restart:</span> <span class=\"hljs-string\">always</span>\n<span class=\"hljs-attr\">    ports:</span>\n<span class=\"hljs-bullet\">      -</span> <span class=\"hljs-string\">&quot;80:80&quot;</span>\n<span class=\"hljs-bullet\">      -</span> <span class=\"hljs-string\">&quot;443:443&quot;</span>\n<span class=\"hljs-attr\">    environment:</span>\n<span class=\"hljs-bullet\">      -</span> <span class=\"hljs-string\">ADMIN_USER=admin</span>\n<span class=\"hljs-bullet\">      -</span> <span class=\"hljs-string\">ADMIN_PASSWORD=Pa55word</span>\n<span class=\"hljs-bullet\">      -</span> <span class=\"hljs-string\">ADMIN_EMAIL=admin@example.com</span>\n<span class=\"hljs-bullet\">      -</span> <span class=\"hljs-string\">ADMIN_PERMISSIONS=b</span>\n<span class=\"hljs-bullet\">      -</span> <span class=\"hljs-string\">ADMIN_FULLNAME=Admin</span>\n<span class=\"hljs-bullet\">      -</span> <span class=\"hljs-string\">ADMIN_TITLE=SiteAdmin</span>\n<span class=\"hljs-bullet\">      -</span> <span class=\"hljs-string\">DOMAIN=example.com</span>    <span class=\"hljs-comment\"># set to your root/apex domain</span>\n<span class=\"hljs-bullet\">      -</span> <span class=\"hljs-string\">GENERATE_CERTS=true</span>   <span class=\"hljs-comment\"># set to true to automatically setup trusted ssl with let&apos;s encrypt</span>\n<span class=\"hljs-attr\">    volumes:</span>\n<span class=\"hljs-attr\">      - backup:</span><span class=\"hljs-string\">/var/www/grav-admin/</span>\n<span class=\"hljs-attr\">volumes:</span>\n<span class=\"hljs-attr\">  backup:</span>\n<span class=\"hljs-attr\">    external:</span> <span class=\"hljs-literal\">false</span></pre><p>and running:</p>\n<pre>docker-compose up <span class=\"hljs-_\">-d</span></pre><p>This will do the following:</p>\n<ul>\n<li>Open ports 80 and 443 for http(s) access</li>\n<li>Configure the admin user</li>\n<li>Create a volume named <code>backup</code> with the grav user data mounted into it</li>\n<li>Generate trusted certificates for &apos;example.com&apos; using Let&apos;s Encrypt</li>\n<li>Configure Nginx with SSL</li>\n</ul>\n<h2>Backing up</h2>\n<p>To create a backup, run the grav backup script in the container:</p>\n<pre>docker exec <span class=\"hljs-params\">&lt;container-name&gt;</span> <span class=\"hljs-meta-keyword\">/var/</span>www<span class=\"hljs-meta-keyword\">/grav-admin/</span>bin/grav backup</pre><p>This wil create a new archive in <code>/var/www/grav-admin/backup</code> which is also located on the host volume.<br>Simply copy this somewhere to ensure you have the full site backed up.  </p>\n<p>For example, to synchronise the contents of the volume to s3:</p>\n<pre>docker run --volumes-<span class=\"hljs-keyword\">from</span>=&lt;container-name&gt; --rm pmcjury<span class=\"hljs-regexp\">/aws-cli s3 sync /</span>var<span class=\"hljs-regexp\">/www/g</span>rav-admin<span class=\"hljs-regexp\">/backup/</span> s3:<span class=\"hljs-comment\">//&lt;bucket-name&gt;</span></pre><h2>Restoring/migrating</h2>\n<p>To restore your site, copy the contents of your backup archive to the backup volume on the host.</p>\n<p>The location of the volume on the host can be found with:</p>\n<pre>docker <span class=\"hljs-keyword\">volume</span><span class=\"bash\"> inspect &lt;volume-name&gt;</span></pre>"
+    },
+    {
+      "component": "footer",
+      "links": [
+        {
+          "href": "https://github.com/dangerfarms/grav",
+          "text": "GitHub"
+        },
+        {
+          "href": "https://github.com/dangerfarms",
+          "text": "dangerfarms"
+        }
+      ]
+    }
+  ]
+}
